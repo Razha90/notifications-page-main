@@ -13,7 +13,7 @@ This is a solution to the [Notifications page challenge on Frontend Mentor](http
 - [Author](#author)
 - [Acknowledgments](#acknowledgments)
 
-## Overview
+## Overview 
 
 ### The challenge
 
