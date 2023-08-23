@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" class="sm:text-[12px] text=[16px]">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./assets/images/favicon-32x32.png"
+    />
+    <title>Frontend Mentor | Notifications page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  </head>
+  <style>
+    @font-face {
+      font-family: "jakarta";
+      src: url("./assets/fonts/PlusJakartaSans-VariableFont_wght.ttf")
+        format("truetype");
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: "jakarta";
+      src: url("./assets/fonts/static/PlusJakartaSans-ExtraBold.ttf")
+        format("truetype");
+      font-weight: bold;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: "jakarta";
+      src: url("./assets/fonts/static/PlusJakartaSans-Medium.ttf")
+        format("truetype");
+      font-weight: 500;
+      font-style: normal;
+    }
+
+    .attribution {
+      font-size: 11px;
+      text-align: center;
+    }
+    .attribution a {
+      color: hsl(228, 45%, 44%);
+    }
+    *,
+    *::before,
+    *::after {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    .draggable {
+      position: relative;
+    }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            putih: "hsl(0, 0%, 100%)",
+            lightBlue0: "hsl(210, 60%, 98%)",
+            lightBlue1: "hsl(211, 68%, 94%)",
+            lightBlue2: "hsl(205, 33%, 90%)",
+            grayishBlue: "hsl(219, 14%, 63%)",
+            darkBlue: "hsl(219, 12%, 42%)",
+            veryDarkBlue: "hsl(224, 21%, 14%)",
+            Reds: "hsl(1, 90%, 64%)",
+            Blues: "hsl(219, 85%, 26%)",
+          },
+          fontFamily: {
+            custom: ["jakarta", "sans-serif"],
+          },
+          screens: {
+            sm: { max: "500px" },
+          },
+          keyframes: {
+            wiggle: {
+              "0%": { 'max-height': "0px" },
+              "100%": { 'max-height': "800px" },
+            },
+          },
+          animation: {
+            "linear": "wiggle 1.5s ease",
+          },
+        },
+      },
+    };
+  </script>
+
+  <body class="flex justify-center bg-lightBlue0">
+    <!--  Header  -->
+    <div
+      id="app"
+      class="animate-linear overflow-hidden hidden bg-putih w-10/12 sm:w-full sm:my-0 my-10 rounded-xl px-7 shadow-xl"
+    >
+      <div role="heading" class="flex flex-row justify-between py-9">
+        <div
+          class="flex flex-row font-custom font-extrabold items-center gap-2"
+        >
+          <h3 class="text-2xl">Notifications</h3>
+          <p class="text-putih bg-Blues text-base px-2 rounded-md">{{notif}}</p>
+        </div>
+        <div>
+          <p
+            @click="allRead()"
+            class="text-base text-darkBlue hover:text-Blues cursor-pointer font-medium"
+          >
+            Mark all as read
+          </p>
+        </div>
+      </div>
+      <!--        -->
+
+      <!--Content-->
+      <div class="bg-clifford flex flex-col gap-3 text-base">
+        <div v-for="data in datas">
+          <div
+            @click="changeNotif(data.id)"
+            class="relative shadow-sm w-full flex flex-row p-4 rounded-lg gap-3"
+            :class="{'bg-lightBlue0': data.read == false, 'bg-putih': data.read == true}"
+          >
+            <div class="shrink-0">
+              <img
+                :src="data.image"
+                :alt="data.name"
+                class="rounded-full w-[3rem] shadow-md"
+              />
+            </div>
+            <div class="grow">
+              <div>
+                <span
+                  class="text-veryDarkBlue font-bold hover:text-Blues cursor-pointer"
+                  >{{data.name}}&nbsp;</span
+                ><span class="text-darkBlue">{{data.reaction}}&nbsp;</span
+                ><span
+                  class="text-Blues hover:opacity-50 font-bold cursor-pointer"
+                  >{{data.msg}}&nbsp;</span
+                >
+                <div
+                  v-if="data.read != true"
+                  class="w-2 h-2 inline-flex ml-1 mb-[2px] rounded-full bg-Reds"
+                ></div>
+              </div>
+
+              <div class="text-grayishBlue"><p>{{data.times}}</p></div>
+            </div>
+            <div v-if="data.imageMsg !== ''" class="shrink-0">
+              <img :src="data.imageMsg" alt="message" class="w-[3rem]" />
+            </div>
+          </div>
+
+          <div
+            v-if="data.privateMsg !== ''"
+            class="flex flex-row gap-3 px-4 text-base"
+          >
+            <div class="shrink-0 w-[42px]"></div>
+            <div
+              class="border p-4 rounded-lg text-darkBlue hover:text-darkBlue cursor-pointer hover:bg-lightBlue2"
+            >
+              {{data.privateMsg}}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!--      -->
+    </div>
+
+    <div
+      id="loading"
+      class="flex w-[100vw] h-[100vh] justify-center items-center"
+    >
+      <div
+        class="h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] text-primary motion-reduce:animate-[spin_1.5s_linear_infinite]"
+        role="status"
+      >
+        <span
+          class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
+          >Loading...</span
+        >
+      </div>
+    </div>
+
+    <div class="attribution fixed bottom-0">
+      Challenge by <a href="https://www.frontendmentor.io/challenges/notifications-page-DqK5QAmKbC/hub" target="_blank">Frontend Mentor</a>. 
+      Coded by <a href="https://github.com/Razha90/Notification-Page" target="_blank">Razha Jamsik Syah</a>.
+    </div>
+  </body>
+  <script>
+    const app = document.getElementById("app");
+    const load = document.getElementById("loading");
+
+    window.addEventListener("load", () => {
+      setTimeout(() => {
+        app.style.display = "block";
+        load.style.display = "none";
+      }, 1000);
+    });
+
+    $(window).scroll(function() {
+    $('#animatedElement').each(function(){
+    var imagePos = $(this).offset().top;
+
+    var topOfWindow = $(window).scrollTop();
+        if (imagePos < topOfWindow+400) {
+            $(this).addClass("slideUp");
+        }
+    });
+}); 
+  </script>
+  <script type="module" src="./assets/script/script.js"></script>
+</html>
